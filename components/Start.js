@@ -17,7 +17,10 @@ export default class Start extends React.Component {
 
   render() {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{
+        flex: 1, justifyContent: 'center', alignItems: 'center'
+      }
+      }>
         <ImageBackground
           style={styles.background}
           source={require('../assets/BackgroundImage.png')}
@@ -114,6 +117,7 @@ const styles = StyleSheet.create({
     width: '88%',
     paddingLeft: '6%',
     paddingRight: '6%',
+    top: '10%',
   },
 
   colorSelection: {
