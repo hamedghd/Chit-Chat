@@ -51,18 +51,38 @@ export default class Start extends React.Component {
                 <TouchableOpacity
                   style={styles.colorSelectionPalette1}
                   onPress={() => this.setState({ colorSelectionBackground: '#090C08' })}
+                  // Adds accessibility features
+                  accessible={true}
+                  accessibilityLabel="color: #090C08"
+                  accessibilityHint="By clicking on this button, you can choose the chat room's background color."
+                  accessibilityRole="Button"
                 />
                 <TouchableOpacity
                   style={styles.colorSelectionPalette2}
                   onPress={() => this.setState({ colorSelectionBackground: '#474056' })}
+                  // Adds accessibility features
+                  accessible={true}
+                  accessibilityLabel="color: #474056"
+                  accessibilityHint="By clicking on this button, you can choose the chat room's background color."
+                  accessibilityRole="Button"
                 />
                 <TouchableOpacity
                   style={styles.colorSelectionPalette3}
                   onPress={() => this.setState({ colorSelectionBackground: '#8A95A5' })}
+                  // Adds accessibility features
+                  accessible={true}
+                  accessibilityLabel="color: #8A95A5"
+                  accessibilityHint="By clicking on this button, you can choose the chat room's background color."
+                  accessibilityRole="Button"
                 />
                 <TouchableOpacity
                   style={styles.colorSelectionPalette4}
                   onPress={() => this.setState({ colorSelectionBackground: '#B9C6AE' })}
+                  // Adds accessibility features
+                  accessible={true}
+                  accessibilityLabel="color: #B9C6AE"
+                  accessibilityHint="By clicking on this button, you can choose the chat room's background color."
+                  accessibilityRole="Button"
                 />
               </View>
             </View>
@@ -74,6 +94,11 @@ export default class Start extends React.Component {
                   colorSelectionBackground: this.state.colorSelectionBackground,
                 })
               }
+              // Adds accessibility features
+              accessible={true}
+              accessibilityLabel="Start Chatting"
+              accessibilityHint="By clicking on this button, you can enter the chat room."
+              accessibilityRole="Button"
             >
               <Text style={styles.buttonText}>Start Chatting</Text>
 
