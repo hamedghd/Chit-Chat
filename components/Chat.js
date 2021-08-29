@@ -52,16 +52,31 @@ export default class Chat extends React.Component {
   }
   // Create a function to change the bubble color
   renderBubble(props) {
-    return (
-      <Bubble
-        {...props}
-        wrapperStyle={{
-          right: {
-            backgroundColor: '#000'
-          }
-        }}
-      />
-    )
+    let color = this.props.route.params.colorSelectionBackground;
+    if (color = '#090c08') {
+      return (
+        <Bubble
+          {...props}
+          wrapperStyle={{
+            right: {
+              backgroundColor: '#757575'
+            }
+          }}
+        />
+      )
+    } else {
+      return (
+        <Bubble
+          {...props}
+          wrapperStyle={{
+            right: {
+              backgroundColor: '#000'
+            }
+          }}
+        />
+      )
+    }
+
   }
 
   render() {
