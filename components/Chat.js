@@ -15,6 +15,9 @@ import {
 const firebase = require('firebase');
 require('firebase/firestore');
 
+// Import AsyncStorage
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 //  Configures the Firestore app
 const firebaseConfig = {
   apiKey: "AIzaSyCX98BL5JmxuBZ8299hbCbdxz8q5-_P1-Q",
@@ -48,12 +51,25 @@ export default class Chat extends React.Component {
     // Creates a reference to your Firestore collection
     this.referenceChatMessages = firebase.firestore().collection('messages');
   };
-
+  // Loads the messages from asyncStorage.
+  async getMessages() {
+    let messages = '';
+    try {
+      messages = await AsyncStorage.getItem('messages') || [];
+      this.setState({
+        messages: JSON.parse(messages)
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   componentDidMount() {
     let name = this.props.route.params.name;
     // Displays the user’s name in the navigation bar at the top of the chat screen.
     this.props.navigation.setOptions({ title: name });
 
+    //  Loads the messages from asyncStorage:
+    this.getMessages();
     // User authentication
     this.authUnsubscribe = firebase.auth().onAuthStateChanged((user) => {
       if (!user) {
@@ -116,6 +132,25 @@ export default class Chat extends React.Component {
       user: message.user,
     });
   };
+  // This function saves the messages in the storage
+  async saveMessages() {
+    try {
+      await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages));
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+  //
+  async deleteMessages() {
+    try {
+      await AsyncStorage.removeItem('messages');
+      this.setState({
+        messages: []
+      })
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
   // It will be called when a user sends a message.
   onSend(messages = []) {
     this.setState(
@@ -125,6 +160,9 @@ export default class Chat extends React.Component {
       () => {
         // onSend adds new messages to the database and updates the messages state
         this.addMessages();
+        // Once the state object is updated, 
+        // it saves its current state into asyncStorage by calling the custom function saveMessages():
+        this.saveMessages();
       }
     );
 
