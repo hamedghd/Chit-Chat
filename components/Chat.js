@@ -9,7 +9,6 @@ import {
   View,
   Platform,
   KeyboardAvoidingView,
-
 } from 'react-native';
 
 // Import Firestore
@@ -26,8 +25,6 @@ const firebaseConfig = {
   appId: "1:844357971418:web:f9468fd21e638ed82164e3",
   measurementId: "G-7RHTWKP8PJ",
 };
-
-
 
 export default class Chat extends React.Component {
   constructor(props) {
@@ -51,34 +48,11 @@ export default class Chat extends React.Component {
     // Creates a reference to your Firestore collection
     this.referenceChatMessages = firebase.firestore().collection('messages');
   };
+
   componentDidMount() {
     let name = this.props.route.params.name;
     // Displays the user’s name in the navigation bar at the top of the chat screen.
     this.props.navigation.setOptions({ title: name });
-    // Sets the state with a static message so that you’ll be able to see each
-    // element of the UI displayed on screen right away
-    /* this.setState({
-      messages: [
-        {
-          _id: 1,
-          text: 'Hello!',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://placeimg.com/140/140/any',
-          },
-        },
-        // Create a system message
-        {
-          _id: 3,
-          text: `${name} entered the room.`,
-          createdAt: new Date(),
-          system: true,
-        },
-      ],
-    });
-    */
 
     // User authentication
     this.authUnsubscribe = firebase.auth().onAuthStateChanged((user) => {
@@ -100,7 +74,6 @@ export default class Chat extends React.Component {
         .orderBy("createdAt", "desc")
         .onSnapshot(this.onCollectionUpdate);
     });
-
   }
   componentWillUnmount() {
     // Stops receiving updates about a collection
@@ -154,6 +127,7 @@ export default class Chat extends React.Component {
         this.addMessages();
       }
     );
+
   }
   // Create a function to change the bubble color
   renderBubble(props) {
@@ -184,11 +158,11 @@ export default class Chat extends React.Component {
   }
 
 
-
   render() {
-    return (
-      <View style={{ flex: 1, backgroundColor: this.props.route.params.colorSelectionBackground }}>
 
+    return (
+
+      <View style={{ flex: 1, backgroundColor: this.props.route.params.colorSelectionBackground }}>
         {/* Renders the chat interface: */}
 
         < GiftedChat
@@ -203,11 +177,14 @@ export default class Chat extends React.Component {
         {/* This, prevents the keyboard to hide 
         the message input field, so that you can’t see what you’re typing: */}
         {Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null}
+
       </View >
     );
-  }
-
+  };
 }
+
+
+
 const styles = StyleSheet.create({
   chat: {
   },
