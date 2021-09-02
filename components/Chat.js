@@ -9,6 +9,7 @@ import {
   View,
   Platform,
   KeyboardAvoidingView,
+  LogBox,
 } from 'react-native';
 
 // Import Firestore
@@ -50,6 +51,8 @@ export default class Chat extends React.Component {
 
     // Creates a reference to your Firestore collection
     this.referenceChatMessages = firebase.firestore().collection('messages');
+    // This ignores the warnings related to setting a timer
+    LogBox.ignoreLogs(['Setting a timer']);
   };
   // Loads the messages from asyncStorage.
   async getMessages() {
