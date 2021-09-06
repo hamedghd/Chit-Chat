@@ -11,6 +11,8 @@ import {
   KeyboardAvoidingView,
   LogBox,
   Alert,
+  TouchableOpacity,
+  Text
 } from 'react-native';
 
 // Import Firestore
@@ -22,6 +24,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Import NetInfo
 import NetInfo from '@react-native-community/netinfo';
+
+// Import renderActions
+import CustomActions from './CustomActions';
 
 //  Configures the Firestore app
 const firebaseConfig = {
@@ -43,7 +48,7 @@ export default class Chat extends React.Component {
       uid: 0,
       loggedInText: "Logging in...",
       user: {
-        _id: '',
+        _id: "",
         name: "",
         avatar: "https://placeimg.com/140/140/any",
       },
@@ -147,6 +152,8 @@ export default class Chat extends React.Component {
           name: data.user.name,
           avatar: data.user.avatar,
         },
+        image: data.image || null,
+        location: data.location || null,
       });
     });
 
@@ -227,7 +234,29 @@ export default class Chat extends React.Component {
       );
     }
   }
-
+  // This function is responsible for creating the circle button.
+  renderCustomActions = (props) => {
+    return <CustomActions {...props} />;
+  };
+  //
+  //custom map view
+  renderCustomView(props) {
+    const { currentMessage } = props;
+    if (currentMessage.location) {
+      return (
+        <MapView
+          style={{ width: 150, height: 100, borderRadius: 13, margin: 3 }}
+          region={{
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+      );
+    }
+    return null;
+  }
 
   render() {
 
@@ -242,6 +271,7 @@ export default class Chat extends React.Component {
           style={styles.chat}
           messages={this.state.messages}
           renderInputToolbar={this.renderInputToolbar.bind(this)}
+          renderActions={this.renderCustomActions}
           onSend={(messages) => this.onSend(messages)}
           user={{ _id: this.state.uid, name: this.props.route.params.name, /*avatar: this.state.avatar*/ }}
         />
