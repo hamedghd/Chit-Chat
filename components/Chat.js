@@ -11,10 +11,9 @@ import {
   KeyboardAvoidingView,
   LogBox,
   Alert,
-  TouchableOpacity,
-  Text
 } from 'react-native';
-
+//
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';;
 // Import Firestore
 const firebase = require('firebase');
 require('firebase/firestore');
@@ -54,6 +53,8 @@ export default class Chat extends React.Component {
       },
       // Add a new state to hold the connection status
       isConnected: false,
+      image: null,
+      location: null,
     };
     //  Initializes the Firestore app
     if (!firebase.apps.length) {
@@ -63,8 +64,13 @@ export default class Chat extends React.Component {
     // Creates a reference to your Firestore collection
     this.referenceChatMessages = firebase.firestore().collection('messages');
     // This ignores the warnings related to setting a timer
-    LogBox.ignoreLogs(['Setting a timer']);
+    LogBox.ignoreLogs([
+      'Setting a timer',
+      'deprecated',
+      'Animated',
+    ]);
   };
+
   // Loads the messages from asyncStorage.
   async getMessages() {
     let messages = '';
@@ -129,6 +135,7 @@ export default class Chat extends React.Component {
       }
     });
   }
+
   componentWillUnmount() {
     // Stops receiving updates about a collection
     this.unsubscribe();
@@ -170,6 +177,8 @@ export default class Chat extends React.Component {
       text: message.text,
       createdAt: message.createdAt,
       user: message.user,
+      image: message.image || null,
+      location: message.location || null,
     });
   };
   // This function saves the messages in the storage
@@ -241,7 +250,7 @@ export default class Chat extends React.Component {
   //
   //custom map view
   renderCustomView(props) {
-    const { currentMessage } = props;
+    const { currentMessage, } = props;
     if (currentMessage.location) {
       return (
         <MapView
@@ -252,6 +261,7 @@ export default class Chat extends React.Component {
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           }}
+          provider={PROVIDER_GOOGLE}
         />
       );
     }
@@ -259,9 +269,7 @@ export default class Chat extends React.Component {
   }
 
   render() {
-
     return (
-
       <View style={{ flex: 1, backgroundColor: this.props.route.params.colorSelectionBackground }}>
         {/* Renders the chat interface: */}
 
@@ -270,8 +278,10 @@ export default class Chat extends React.Component {
           renderBubble={this.renderBubble.bind(this)}
           style={styles.chat}
           messages={this.state.messages}
+          renderUsernameOnMessage={true}
           renderInputToolbar={this.renderInputToolbar.bind(this)}
           renderActions={this.renderCustomActions}
+          renderCustomView={this.renderCustomView}
           onSend={(messages) => this.onSend(messages)}
           user={{ _id: this.state.uid, name: this.props.route.params.name, /*avatar: this.state.avatar*/ }}
         />

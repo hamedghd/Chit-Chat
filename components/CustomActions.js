@@ -21,13 +21,124 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
-import firebase from 'firebase';
-import firestore from 'firebase';
-//import firebase
-// const firebase = require("firebase");
-// require("firebase/firestore");
+// Import firebase
+const firebase = require("firebase");
+require("firebase/firestore");
 
 export default class CustomActions extends React.Component {
+  /**
+   * Let the user pick an image from the device's image library
+   * @function imagePicker
+   * @async
+   */
+  imagePicker = async () => {
+    // expo permission
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    try {
+      if (status === "granted") {
+        // pick image
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images, // only images are allowed
+        }).catch((error) => console.log(error));
+        // canceled process
+        if (!result.cancelled) {
+          const imageUrl = await this.uploadImageFetch(result.uri);
+          this.props.onSend({ image: imageUrl, text: 'image:' });
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  /**
+   * Let the user take a photo with device's camera
+   * @function takePhoto
+   * @async
+   */
+  takePhoto = async () => {
+    const { status } = await Permissions.askAsync(
+      Permissions.CAMERA,
+      Permissions.CAMERA_ROLL
+    );
+    try {
+      if (status === "granted") {
+        const result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        }).catch((error) => console.log(error));
+
+        if (!result.cancelled) {
+          const imageUrl = await this.uploadImageFetch(result.uri);
+          this.props.onSend({ image: imageUrl, text: "my taken photo:" });
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  /**
+   * get the location of the user by using GPS
+   * @function getLocation
+   * @async
+   */
+  getLocation = async () => {
+    try {
+      const { status } = await Permissions.askAsync(Permissions.LOCATION_FOREGROUND);
+      if (status === "granted") {
+        const result = await Location.getCurrentPositionAsync(
+          {}
+        ).catch((error) => console.log(error));
+        //const longitude = JSON.stringify(result.coords.longitude);
+        //const altitude = JSON.stringify(result.coords.latitude);
+        if (result) {
+          this.props.onSend({
+            /*
+            location: {
+              longitude: result.coords.longitude,
+              latitude: result.coords.latitude,
+            }, */
+            location: result.coords,
+            text: `my location: latitude ${result.coords.latitude} , longitude ${result.coords.longitude}`,
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  /**
+   * Upload images to firebase
+   * @function uploadImageFetch
+   * @async
+   */
+  uploadImageFetch = async (uri) => {
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function (e) {
+        console.log(e);
+        reject(new TypeError("Network request failed"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
+    });
+
+    const imageNameBefore = uri.split("/");
+    const imageName = imageNameBefore[imageNameBefore.length - 1];
+
+    const ref = firebase.storage().ref().child(`images/${imageName}`);
+
+    const snapshot = await ref.put(blob);
+
+    blob.close();
+
+    return await snapshot.ref.getDownloadURL();
+  };
 
   /**
    * function that handles communication features
@@ -50,13 +161,13 @@ export default class CustomActions extends React.Component {
         switch (buttonIndex) {
           case 0:
             console.log("user wants to pick an image");
-            return;
+            return this.imagePicker();
           case 1:
             console.log("user wants to take a photo");
-            return;
+            return this.takePhoto();
           case 2:
             console.log("user wants to get their location");
-            return;
+            return this.getLocation();
         }
       }
     );
