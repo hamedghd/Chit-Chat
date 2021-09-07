@@ -1,6 +1,6 @@
 # Chit-Chat
 
-![alt text] (https://github.com/hamedghd/Chit-Chat/blob/communication-features/Chit-Chat.jpg)
+![alt text] (https://github.com/hamedghd/Chit-Chat/blob/communication-features/assets/Chit-Chat.jpg)
 
 ## Description
 Chit-chat is a chat application that is built using React Native for mobile devices. The app provides user a chat interface and enables users to send text messages and share images and their location. The chat history is available also when the device is offline.
